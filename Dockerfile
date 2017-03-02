@@ -13,6 +13,7 @@ WORKDIR /home/kannji/api-server
 
 # every thing fresh
 RUN apt-get -y update
+RUN apt-get -y install apt-utils
 RUN apt-get -y upgrade
 
 # get necessary stuff
