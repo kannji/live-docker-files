@@ -9,4 +9,7 @@ docker rmi kannji-api-base-image
 cp /home/kannji/passwords.sh ./passwords.py
 
 # build the new docker image
-docker build -t --no-cache kannji-api-base-image /home/kannji/docker/api/base
+docker build --no-cache -t kannji-api-base-image /home/kannji/docker/api/base
+
+# remove password file
+rm ./passwords.py
