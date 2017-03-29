@@ -10,17 +10,21 @@ WORKDIR /home/kannji/api-server
 
 # every thing fresh
 RUN apt-get -y update
-RUN apt-get -y install apt-utils
 RUN apt-get -y upgrade
 
 # get necessary stuff
+# Django for obvious reasons
 RUN pip install Django
+# Something to connect python to mysql
 RUN pip install mysqlclient
+# Some Xpath library to parse the kanjidic2 and jmdict with
 RUN apt-get -y install libxml2-dev libxslt-dev python-dev
 RUN pip install lxml
-RUN apt-get -y install unzip
+# oauth2 authentication for django
+pip install django-oauth2-provider
 
 # get the server code
+RUN apt-get -y install unzip
 RUN mkdir -p /home/kannji/api-server
 RUN wget -O /home/kannji/api-server/master.zip 'https://github.com/Jan-LucaKlees/Kannji-Server/archive/master.zip'
 RUN unzip /home/kannji/api-server/master.zip
