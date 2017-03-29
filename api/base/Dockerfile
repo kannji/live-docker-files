@@ -21,7 +21,7 @@ RUN pip install mysqlclient
 RUN apt-get -y install libxml2-dev libxslt-dev python-dev
 RUN pip install lxml
 # oauth2 authentication for django
-pip install django-oauth2-provider
+RUN pip install django-oauth2-provider
 
 # get the server code
 RUN apt-get -y install unzip
