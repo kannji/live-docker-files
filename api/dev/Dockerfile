@@ -16,6 +16,5 @@ ARG API_DEV_PW
 RUN apt-get -y install openssh-server
 RUN sed -i '/^PermitRootLogin/s/without-password/yes/' /etc/ssh/sshd_config
 RUN echo root:$API_DEV_PW | chpasswd
-RUN service ssh restart
 
-ENTRYPOINT python /home/kannji/api-server/manage.py runserver 0.0.0.0:8000
+ENTRYPOINT python /home/kannji/api-server/manage.py runserver 0.0.0.0:8000 && service ssh start
