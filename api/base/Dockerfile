@@ -21,7 +21,10 @@ RUN pip install mysqlclient
 RUN apt-get -y install libxml2-dev libxslt-dev python-dev
 RUN pip install lxml
 # oauth2 authentication for django
-RUN pip install django-oauth2-provider
+RUN pip install django-oauth-toolkit django-cors-middleware
+
+# get password file
+COPY passwords.py /home/kannji/api-server/passwords.py
 
 # get the server code
 RUN apt-get -y install unzip
@@ -29,9 +32,6 @@ RUN mkdir -p /home/kannji/api-server
 RUN wget -O /home/kannji/api-server/master.zip 'https://github.com/Jan-LucaKlees/Kannji-Server/archive/master.zip'
 RUN unzip /home/kannji/api-server/master.zip
 RUN cp -r /home/kannji/api-server/Kannji-Server-master/. /home/kannji/api-server/
-
-# get password file
-COPY passwords.py /home/kannji/api-server/passwords.py
 
 # cleaning up a little
 RUN rm master.zip
