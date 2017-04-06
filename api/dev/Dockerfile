@@ -10,11 +10,11 @@ EXPOSE 8000
 EXPOSE 22
 
 # get passsword from environment vars
-
 ARG API_DEV_PW
 
+# enable root login via ssh and set passwort
 RUN apt-get -y install openssh-server
 RUN sed -i '/^PermitRootLogin/s/without-password/yes/' /etc/ssh/sshd_config
 RUN echo root:$API_DEV_PW | chpasswd
 
-ENTRYPOINT python /home/kannji/api-server/manage.py runserver 0.0.0.0:8000 && service ssh start
+ENTRYPOINT service ssh start && python /home/kannji/api-server/manage.py runserver 0.0.0.0:8000
