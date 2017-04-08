@@ -23,20 +23,4 @@ RUN pip install lxml
 # oauth2 authentication for django
 RUN pip install django-oauth-toolkit django-cors-middleware
 
-# get password file
-COPY passwords.py /home/kannji/api-server/passwords.py
-
-# get the server code
-RUN apt-get -y install unzip
-RUN mkdir -p /home/kannji/api-server
-RUN wget -O /home/kannji/api-server/master.zip 'https://github.com/Jan-LucaKlees/Kannji-Server/archive/master.zip'
-RUN unzip /home/kannji/api-server/master.zip
-RUN cp -r /home/kannji/api-server/Kannji-Server-master/. /home/kannji/api-server/
-
-# cleaning up a little
-RUN rm master.zip
-RUN rm -r Kannji-Server-master/
-
-RUN python /home/kannji/api-server/manage.py migrate
-
 ENTRYPOINT bash
