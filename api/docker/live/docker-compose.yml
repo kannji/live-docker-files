@@ -1,0 +1,26 @@
+version: "2"
+
+services:
+
+  kannji-api-db:
+    image: postgres
+    environment:
+      - POSTGRES_USER=kannji
+      - POSTGRES_PASSWORD=changeme
+      - POSTGRES_DB=kannji
+    healthcheck:
+      test: ["CMD", "pg_isready"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  kannji-api-server:
+    build: .
+    image: live_kannji-api-server
+    ports:
+      - "80:80"
+    environment:
+      - API_DEV_PW=qwer1234
+    depends_on:
+      kannji-api-db:
+        condition: service_healthy

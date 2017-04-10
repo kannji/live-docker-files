@@ -1,0 +1,45 @@
+version: '2.1'
+services:
+
+  api-db:
+    image: "postgres"
+    environment:
+      - POSTGRES_USER=kannji
+      - POSTGRES_PASSWORD=changeme
+      - POSTGRES_DB=kannji
+    healthcheck:
+      test: ["CMD", "pg_isready"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - api
+
+  api-server:
+    build: ./api/docker/dev
+    image: api-server
+    ports:
+      - "2222:22"
+    environment:
+      - API_DEV_PW=qwer1234
+    depends_on:
+      api-db:
+        condition: service_healthy
+    networks:
+      - api
+      - nginx
+
+  nginx:
+    build: ./nginx/docker
+    image: nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - nginx
+    depends_on:
+      - api-server
+
+networks:
+  api:
+  nginx:
