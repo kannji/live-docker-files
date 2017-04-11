@@ -30,25 +30,23 @@ RUN apt-get -y install unzip
 RUN mkdir -p /kannji/
 
 # get the server code from the repo
-RUN wget -x -O /kannji/postgres.zip 'https://github.com/kannji/api-server/archive/postgres.zip'
+ADD https://github.com/kannji/api-server/archive/postgres.zip /kannji/postgres.zip
 
 # extract the code it
 RUN unzip /kannji/postgres.zip -d /kannji/
 
 WORKDIR /kannji/api-server-postgres/
 
-# get password file
-COPY passwords.sh passwords.py
-
 # expose port for later access
-EXPOSE 22
+# EXPOSE 22
 
 # get passsword from environment vars and install ssh for remote access / fileupload
-ARG API_DEV_PW
+# ARG API_DEV_SERVER_SSH_PW
 
-RUN apt-get -y install openssh-server
-RUN sed -i '/^PermitRootLogin/s/without-password/yes/' /etc/ssh/sshd_config
-RUN echo root:"def23383482c89b70ff5bc24a98c11373fdf8317a595072be3511f58828c48f7" | chpasswd
+# RUN apt-get -y install openssh-server
+# RUN sed -i '/^PermitRootLogin/s/without-password/yes/' /etc/ssh/sshd_config
+# RUN echo root:$API_DEV_SERVER_SSH_PW | chpasswd
 
-# ENTRYPOINT service ssh start && python manage.py migrate && python manage.py runserver 0.0.0.0:8000
-ENTRYPOINT service ssh start && sleep infinity
+# ENTRYPOINT service ssh start && python manage.py migrate && python manage.py runserver 0.0.0.0:80
+
+ENTRYPOINT python manage.py migrate && python manage.py runserver 0.0.0.0:80

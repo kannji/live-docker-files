@@ -1,0 +1,56 @@
+version: '2.1'
+services:
+
+  api-db:
+    build:
+      context: ./api-db/
+    image: kannji_api-db
+    environment:
+      - POSTGRES_USER=${API_DB_USER}
+      - POSTGRES_PASSWORD=${API_DB_PASSWORD}
+      - POSTGRES_DB=${API_DB_DBNAME}
+    healthcheck:
+      test: ["CMD", "pg_isready"]
+      interval: 10s
+      timeout: 10s
+      retries: 15
+    networks:
+      - api
+    volumes:
+      - ./api-db/data/:/var/lib/postgresql/data/
+
+  api-server:
+    build:
+      context: ./api-server/
+      args:
+        - API_DEV_SERVER_SSH_PW
+    image: kannji_api-server
+    environment:
+      - API_DB_USER
+      - API_DB_PASSWORD
+      - API_DB_DBNAME
+      - API_SERVER_SECRET_KEY
+    ports:
+      - "2222:22"
+    depends_on:
+      api-db:
+        condition: service_healthy
+    networks:
+      - api
+      - nginx
+
+  nginx:
+    build:
+      context: ./nginx/
+    image: kannji_nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - nginx
+    depends_on:
+      - api-server
+
+networks:
+  api:
+  nginx:
