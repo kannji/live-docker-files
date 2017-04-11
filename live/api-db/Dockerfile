@@ -1,11 +1,8 @@
 ############################################################
-# Dockerfile to build kannji-api deployment server
+# Dockerfile to build the development kannji-api server
 # Based on Python
 ############################################################
-FROM kannji-api-base-image
+FROM postgres
 LABEL maintainer "Jan-Luca Klees and Johannes Heise"
 
-# expose port for later access
-EXPOSE 80
-
-ENTRYPOINT python /home/kannji/api-server/manage.py runserver 0.0.0.0:80
+ADD data/ /var/lib/postgresql/data/
