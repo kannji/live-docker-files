@@ -22,16 +22,16 @@ services:
   api-server:
     build:
       context: ./api-server/
-      args:
-        - API_DEV_SERVER_SSH_PW
+      #args:
+      #  - API_DEV_SERVER_SSH_PW
     image: kannji_api-server
     environment:
       - API_DB_USER
       - API_DB_PASSWORD
       - API_DB_DBNAME
       - API_SERVER_SECRET_KEY
-    ports:
-      - "2222:22"
+    #ports:
+    #  - "2222:22"
     depends_on:
       api-db:
         condition: service_healthy
