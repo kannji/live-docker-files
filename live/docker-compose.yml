@@ -1,56 +1,56 @@
 version: '2.1'
 services:
 
-  api-db:
+  user-db:
     build:
-      context: ./api-db/
-    image: kannji_api-db
+      context: ./user-db/
+    image: kannji_user-db
+    env_file:
+      - ./env/user-db.env
     environment:
-      - POSTGRES_USER=${API_DB_USER}
-      - POSTGRES_PASSWORD=${API_DB_PASSWORD}
-      - POSTGRES_DB=${API_DB_DBNAME}
+      - POSTGRES_USER=${USER_DB_USER}
+      - POSTGRES_PASSWORD=${USER_DB_PASSWORD}
+      - POSTGRES_DB=${USER_DB_DBNAME}
     healthcheck:
       test: ["CMD", "pg_isready"]
       interval: 10s
       timeout: 10s
       retries: 15
     networks:
-      - api
+      - user
     volumes:
-      - ./api-db/data/:/var/lib/postgresql/data/
+      - ./user-db/data/:/var/lib/postgresql/data/
 
-  api-server:
+  user-server:
     build:
-      context: ./api-server/
-      #args:
-      #  - API_DEV_SERVER_SSH_PW
-    image: kannji_api-server
-    environment:
-      - API_DB_USER
-      - API_DB_PASSWORD
-      - API_DB_DBNAME
-      - API_SERVER_SECRET_KEY
-    #ports:
-    #  - "2222:22"
+      context: ./user-server/
+    image: kannji_user-server
+    env_file:
+      - ./env/user-db.env
+      - ./env/user-server.env
+      - ./env/nginx.env
+      - ./env/global.env
     depends_on:
-      api-db:
+      user-db:
         condition: service_healthy
     networks:
-      - api
+      - user
       - nginx
 
   nginx:
     build:
       context: ./nginx/
     image: kannji_nginx
+    env_file:
+      - ./env/nginx.env
     ports:
       - "80:80"
       - "443:443"
     networks:
       - nginx
     depends_on:
-      - api-server
+      - user-server
 
 networks:
-  api:
+  user:
   nginx:

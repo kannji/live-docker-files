@@ -1,6 +1,7 @@
 **/[Pp]assword[s]*
 .idea/
-live/.env
-live/api-db/data/
+**/*.env
+live/user-db/data/
+dev/api-db/data/
 live/nginx/letsencrypt/
 live/nginx/dhparam.pem
