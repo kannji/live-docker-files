@@ -10,20 +10,15 @@ RUN apt-get -y update
 RUN apt-get -y upgrade
 
 # get necessary stuff
-
 # Django for obvious reasons
 RUN pip install Django
-
 # Something to connect python to postgres
 RUN pip install psycopg2
-
 # Some Xpath library to parse the kanjidic2 and jmdict with
 RUN apt-get -y install libxml2-dev libxslt-dev python-dev
 RUN pip install lxml
-
 # oauth2 authentication for django
 RUN pip install django-oauth-toolkit django-cors-middleware
-
 # some zip tool for extracting the code from the repo
 RUN apt-get -y install unzip
 
@@ -37,15 +32,4 @@ RUN unzip /kannji/master.zip -d /kannji/
 
 WORKDIR /kannji/api-server-master/
 
-# expose port for later access
-EXPOSE 22
-
-# get passsword from environment vars and install ssh for remote access / fileupload
-ARG API_DEV_SERVER_SSH_PW
-
-RUN apt-get -y install openssh-server
-RUN sed -i '/^PermitRootLogin/s/without-password/yes/' /etc/ssh/sshd_config
-RUN echo root:$API_DEV_SERVER_SSH_PW | chpasswd
-
-# ENTRYPOINT service ssh start && python manage.py migrate && python manage.py runserver 0.0.0.0:80
-ENTRYPOINT service ssh start && sleep infinity
+ENTRYPOINT python manage.py migrate && python manage.py runserver 0.0.0.0:80

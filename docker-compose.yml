@@ -1,0 +1,97 @@
+# the version of the docker-compose file
+version: "2.1"
+
+# list of services - meaning containers - to be managed by docker-compose
+services:
+
+  # the user-db container
+  user-db:
+
+    # this tells docker-compose to build an image using the Dockerfile found at the path specified by the context attribute.
+    build:
+      context: ./services/user-db/
+    # this will be the name of the image, once it's built
+    image: kannji_user-db
+
+    # environment variables which will be accessible in the running container
+    environment:
+      - POSTGRES_DB=${USER_DB_DBNAME}
+      - POSTGRES_USER=${USER_DB_USERNAME}
+      - POSTGRES_PASSWORD=${USER_DB_PASSWORD}
+
+    # this defines how this container will be rated as "healthy"
+    healthcheck:
+      test: ["CMD", "pg_isready"]
+      interval: 10s
+      timeout: 10s
+      retries: 15
+
+    # which networks is the container connected to
+    networks:
+      - user
+
+  # the api-server
+  api-server:
+
+    # build the api-server with the Dockerfile found at context
+    build:
+      context: ./services/api-server/
+    # name its this
+    image: kannji_api-server
+
+    # these are the environment variables which will be accessible in the running container
+    environment:
+      - DEBUG
+      - HOST
+      - API_DB_DBNAME=${USER_DB_DBNAME}
+      - API_DB_USER=${USER_DB_USERNAME}
+      - API_DB_PASSWORD=${USER_DB_PASSWORD}
+      - API_DB_HOST=${USER_DB_HOST}
+      - API_SERVER_SECRET_KEY
+
+    # which container need to be in what condition for this container to be able to run?
+    depends_on:
+      # the status of the api-db needs to be healthy (see above)
+      user-db:
+        condition: service_healthy
+
+    # the api-server needs to handle incoming requests, so it is connected to the nginx- (for incoming requests) and the api-db-network (for accessing the database)
+    # note: added security as there is no direct access to the db from outside the host.
+    networks:
+      - user
+      - nginx
+
+  # the nginx server
+  nginx:
+
+    # build it by using the DOcker file at context
+    build:
+      context: ./services/nginx/
+    # give it this name
+    image: kannji_nginx
+
+    # the nginx needs to handle requests from outside the host, so we add these port-mappings.
+    # on the host all incoming requests to the port 80 will be forwarded to the containers 80 port.
+    # same with the 443 port (https)
+    # sceme: <port on container:port on host>
+    # example: "8000:80" will map all requests to the host on port 80 to the container on port 8000
+    ports:
+      - "80:80"
+      - "443:443"
+
+    # to be able pass requests to other containers the nginx has an own network.
+    # all accessible containers must be in this network.
+    networks:
+      - nginx
+
+    # as nginx checks if hostnames in the config file are accessible, the nginx can only start, when the api-server is running.
+    # technically we would need a health-check, but the api-server starts so fast, that it's not necessary
+    depends_on:
+      - api-server
+
+# here we specify which networks should be created
+# only networks that are written down here can be referenced in the services. (exception being the 'default' network, which we don't use due to it's meaningless name)
+networks:
+  # we don't want any fancy config for our networks, so only the name suffices
+  user:
+  nginx:

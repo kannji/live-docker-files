@@ -5,4 +5,4 @@
 FROM postgres
 LABEL maintainer "Jan-Luca Klees and Johannes Heise"
 
-ADD data/ /var/lib/postgresql/data/
+ADD ./data/data/ /var/lib/postgresql/data/
