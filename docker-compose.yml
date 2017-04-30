@@ -1,25 +1,23 @@
 # the version of the docker-compose file
-version: '2.1'
+version: "2.1"
 
 # list of services - meaning containers - to be managed by docker-compose
 services:
 
-  # the api-db container
-  api-db:
+  # the user-db container
+  user-db:
 
     # this tells docker-compose to build an image using the Dockerfile found at the path specified by the context attribute.
     build:
-      context: ./api-db/
-
+      context: ./services/user-db/
     # this will be the name of the image, once it's built
-    image: kannji_api-db
+    image: kannji_user-db
 
     # environment variables which will be accessible in the running container
-    # the values of ${API_DB_USER}, ${API_DB_PASSWORD}, ${API_DB_DBNAME} come from the .env file lying in the same dir as this file
     environment:
-      - POSTGRES_USER=${API_DB_USER}
-      - POSTGRES_PASSWORD=${API_DB_PASSWORD}
-      - POSTGRES_DB=${API_DB_DBNAME}
+      - POSTGRES_DB=${USER_DB_DBNAME}
+      - POSTGRES_USER=${USER_DB_USERNAME}
+      - POSTGRES_PASSWORD=${USER_DB_PASSWORD}
 
     # this defines how this container will be rated as "healthy"
     healthcheck:
@@ -30,40 +28,37 @@ services:
 
     # which networks is the container connected to
     networks:
-      - api
-
-    # volumes to be mounted from the host into the container (host-path:container-path)
-    volumes:
-      - ./api-db/data/:/var/lib/postgresql/data/
+      - user
 
   # the api-server
   api-server:
 
     # build the api-server with the Dockerfile found at context
     build:
-      context: ./api-server/
-
+      context: ./services/api-server/
     # name its this
     image: kannji_api-server
 
     # these are the environment variables which will be accessible in the running container
-    # their values come from the .env file located in the same folder as this one.
     environment:
-      - API_DB_USER
-      - API_DB_PASSWORD
-      - API_DB_DBNAME
+      - DEBUG
+      - HOST
+      - API_DB_DBNAME=${USER_DB_DBNAME}
+      - API_DB_USER=${USER_DB_USERNAME}
+      - API_DB_PASSWORD=${USER_DB_PASSWORD}
+      - API_DB_HOST=${USER_DB_HOST}
       - API_SERVER_SECRET_KEY
 
     # which container need to be in what condition for this container to be able to run?
     depends_on:
       # the status of the api-db needs to be healthy (see above)
-      api-db:
+      user-db:
         condition: service_healthy
 
     # the api-server needs to handle incoming requests, so it is connected to the nginx- (for incoming requests) and the api-db-network (for accessing the database)
     # note: added security as there is no direct access to the db from outside the host.
     networks:
-      - api
+      - user
       - nginx
 
   # the nginx server
@@ -71,8 +66,7 @@ services:
 
     # build it by using the DOcker file at context
     build:
-      context: ./nginx/
-
+      context: ./services/nginx/
     # give it this name
     image: kannji_nginx
 
@@ -99,5 +93,5 @@ services:
 # only networks that are written down here can be referenced in the services. (exception being the 'default' network, which we don't use due to it's meaningless name)
 networks:
   # we don't want any fancy config for our networks, so only the name suffices
-  api:
+  user:
   nginx:

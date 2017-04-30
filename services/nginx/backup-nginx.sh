@@ -1,20 +1,21 @@
 #!/bin/bash
 
 # change to the directory this script is in, to mke life easier
-cd /kannji/live/nginx/
+cd /kannji/services/nginx/
 
 # set the name for the backup dir
 bkpDirName="bkp_nginx_$(date '+%Y-%m-%d_%H:%M')"
 
 # create folder for backing up old data
-mkdir ${bkpDirName}
+mkdir ./backups/${bkpDirName}
 
 # TODO assuming that the container name is constant
 # copy the current data from the server into the backup folder
-docker cp kannji_nginx_1:/etc/letsencrypt/ ./${bkpDirName}/letsencrypt/
-docker cp kannji_nginx_1:/etc/ssl/certs/dhparam.pem ./${bkpDirName}/dhparam.pem
+docker cp kannji_nginx_1:/etc/letsencrypt/          ./backups/${bkpDirName}/letsencrypt/
+docker cp kannji_nginx_1:/etc/ssl/certs/dhparam.pem ./backups/${bkpDirName}/dhparam.pem
+# TODO compress bkp dir
 
 # TODO assuming that the container name is constant
 # copy the current data to the nginx dir (this dir) to be used when the nginx container is recreated. (see Dockerfile)
-docker cp kannji_nginx_1:/etc/letsencrypt/ ./letsencrypt/
-docker cp kannji_nginx_1:/etc/ssl/certs/dhparam.pem ./dhparam.pem
+docker cp kannji_nginx_1:/etc/letsencrypt/          ./data/letsencrypt/
+docker cp kannji_nginx_1:/etc/ssl/certs/dhparam.pem ./data/dhparam.pem
