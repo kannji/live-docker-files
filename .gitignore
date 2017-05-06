@@ -2,6 +2,6 @@
 **/*.env
 .idea/
 services/*/backups
-services/user-db/data
+services/user-db/data/data/*
 services/nginx/data/letsencrypt/
 services/nginx/data/dhparam.pem
