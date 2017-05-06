@@ -13,6 +13,8 @@ services:
     # this will be the name of the image, once it's built
     image: kannji_user-db
 
+    restart: always
+
     # environment variables which will be accessible in the running container
     environment:
       - POSTGRES_DB=${USER_DB_DBNAME}
@@ -41,6 +43,8 @@ services:
       context: ./services/api-server/
     # name its this
     image: kannji_api-server
+
+    restart: always
 
     # these are the environment variables which will be accessible in the running container
     environment:
@@ -74,6 +78,8 @@ services:
       context: ./services/nginx/
     # give it this name
     image: kannji_nginx
+
+    restart: always
 
     # the nginx needs to handle requests from outside the host, so we add these port-mappings.
     # on the host all incoming requests to the port 80 will be forwarded to the containers 80 port.
