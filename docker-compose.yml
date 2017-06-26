@@ -79,6 +79,9 @@ services:
     # give it this name
     image: kannji_nginx
 
+    volumes_from:
+      - certbot
+
     restart: always
 
     # the nginx needs to handle requests from outside the host, so we add these port-mappings.
@@ -99,6 +102,13 @@ services:
     # technically we would need a health-check, but the api-server starts so fast, that it's not necessary
     depends_on:
       - api-server
+
+  certbot:
+    image: certbot/certbot
+    command: renew
+    volumes:
+      - ./services/certbot/mounts/letsencrypt:/etc/letsencrypt
+      - ./services/certbot/mounts/challenges:/data/letsencrypt/challenges
 
 # here we specify which networks should be created
 # only networks that are written down here can be referenced in the services. (exception being the 'default' network, which we don't use due to it's meaningless name)
