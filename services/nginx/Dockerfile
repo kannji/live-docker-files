@@ -1,6 +1,5 @@
 ############################################################
-# Dockerfile to build kannji-api deployment server
-# Based on Python
+# Dockerfile to build the kannji nginx for server Alan
 ############################################################
 FROM nginx
 LABEL maintainer "Jan-Luca Klees and Johannes Heise"
