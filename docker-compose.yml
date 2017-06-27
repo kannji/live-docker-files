@@ -79,8 +79,11 @@ services:
     # give it this name
     image: kannji_nginx
 
-    volumes_from:
-      - certbot
+    volumes:
+      - ./services/certbot/mounts/letsencrypt:/etc/letsencrypt:ro
+      - ./services/certbot/mounts/challenges:/data/letsencrypt/challenges:ro
+      - ./services/certbot/mounts/certificates:/data/letsencrypt/certificates:ro
+      - ./services/certbot/mounts/logs:/var/log/letsencrypt:ro
 
     restart: always
 
@@ -107,9 +110,10 @@ services:
     image: certbot/certbot
     command: renew
     volumes:
-      - ./services/certbot/mounts/letsencrypt:/etc/letsencrypt
-      - ./services/certbot/mounts/challenges:/data/letsencrypt/challenges
-      - ./services/certbot/mounts/logs:/var/log/letsencrypt/
+      - ./services/certbot/mounts/letsencrypt:/etc/letsencrypt:rw
+      - ./services/certbot/mounts/challenges:/data/letsencrypt/challenges:rw
+      - ./services/certbot/mounts/certificates:/data/letsencrypt/certificates:rw
+      - ./services/certbot/mounts/logs:/var/log/letsencrypt:rw
 
 # here we specify which networks should be created
 # only networks that are written down here can be referenced in the services. (exception being the 'default' network, which we don't use due to it's meaningless name)
