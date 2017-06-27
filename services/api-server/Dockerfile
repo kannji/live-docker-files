@@ -10,6 +10,7 @@ RUN apt-get -y update
 RUN apt-get -y upgrade
 
 # get necessary stuff
+# TODO reduce command count, for less layers in docker image
 # Django for obvious reasons
 RUN pip install Django
 # Something to connect python to postgres
