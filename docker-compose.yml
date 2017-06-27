@@ -109,6 +109,7 @@ services:
     volumes:
       - ./services/certbot/mounts/letsencrypt:/etc/letsencrypt
       - ./services/certbot/mounts/challenges:/data/letsencrypt/challenges
+      - ./services/certbot/mounts/logs:/var/log/letsencrypt/
 
 # here we specify which networks should be created
 # only networks that are written down here can be referenced in the services. (exception being the 'default' network, which we don't use due to it's meaningless name)
