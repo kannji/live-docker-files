@@ -1,19 +1,15 @@
 #!/bin/bash
 
 # change to the directory this script is in, to mke life easier
-cd /kannji/services/user-db/
+cd /kannji
 
 # set the name for the backup dir
-bkpDirName="bkp_user-db_$(date '+%Y-%m-%d_%H:%M')"
+bkpName="bkp_user-db_$(date '+%Y-%m-%d_%H:%M').tar.gz"
 
-# create folder for backing up old data
-mkdir ./backups/${bkpDirName}
+# TODO use pg_dumpall for backup to not create inconsistent backup
 
-# TODO assuming that the container name is constant
-# copy the current data from the database into the backup folder
-docker cp kannji_api-db_1:/var/lib/postgresql/data/ ./backups/${bkpDirName}/data/
-# TODO compress bkp dir
-
-# TODO assuming that the container name is constant
 # copy the current data to the api-db dir (this dir) to be used when the api-db container is recreated. (see Dockerfile)
-docker cp kannji_api-db_1:/var/lib/postgresql/data/ ./data/data/
+docker cp $(docker-compose ps -q user-db):/var/lib/postgresql/data/ ./services/user-db/data/data/
+
+# store the backup as tar.gz file
+tar -czf ./services/user-db/backups/${bkpName} ./services/user-db/data/data/
