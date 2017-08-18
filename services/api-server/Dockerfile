@@ -15,7 +15,7 @@ RUN apk update && apk upgrade && \
 RUN pip install Django psycopg2 lxml django-oauth-toolkit django-cors-middleware
 
 # getting the code
-#TODO checksum check
+# TODO checksum check
 # first, new dir
 RUN mkdir -p /kannji/
 # get the server code from the repo
